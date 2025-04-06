@@ -3,4 +3,4 @@ llama-index-vector-stores-qdrant
 groq
 transformers==4.50.3
 sentence-transformers==2.7.0
-llama-index-embeddings-huggingface_optimum
+pydantic-settings
