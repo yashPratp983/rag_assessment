@@ -28,17 +28,17 @@ class LLMMetadataExtractor:
         Extract structured metadata from this assessment search query. 
         Return a JSON object with these fields ONLY IF they are explicitly mentioned or clearly implied in the query:
         
-        - job_levels: array of job level strings (e.g., ["entry level", "midl level", "senior"])
+        - job_levels: array of job level strings (e.g., ["entry-level", "mid-level", "senior"])
         - languages: array of language strings (e.g., ["english", "spanish"])
         - min_duration: minimum duration in minutes (integer)
         - max_duration: maximum duration in minutes (integer)
         
         IMPORTANT INSTRUCTIONS:
+        - Job level stictly implies senerioty level of a job.
         - If a field is not mentioned in the query, DO NOT include that field in the JSON response.
         - Return empty values as empty arrays or null, not as empty strings.
         - The field values should be exactly as mentioned in the query (don't make up values).
         - For job_levels, normalize casing (e.g., capitalize consistently).
-        - Remove - from job levels (e.g., "entry-level" -> "entry level").
         - If duration is mentioned without specifying min or max (e.g., "60 minute assessment"), pick the appropriate field.
         
         EXAMPLES:
