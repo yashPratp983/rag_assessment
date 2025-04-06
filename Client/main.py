@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # API URL - this should point to your FastAPI service
-API_URL = "https://yash983-shl-rag-assessment.hf.space/"
+API_URL = "https://yash983-shl-rag-assessment.hf.space"
 
 def query_assessments(query: str):
     """Call the FastAPI backend to query assessments using only query string"""
