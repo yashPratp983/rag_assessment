@@ -30,8 +30,8 @@ class LLMMetadataExtractor:
         
         - job_levels: array of job level strings (e.g., ["entry-level", "mid-level", "senior"])
         - languages: array of language strings (e.g., ["english", "spanish"])
-        - min_duration: minimum duration in minutes (integer)
-        - max_duration: maximum duration in minutes (integer)
+        - min_duration: minimum time duration in minutes (integer)
+        - max_duration: maximum time duration in minutes (integer)
         
         IMPORTANT INSTRUCTIONS:
         - Job level stictly implies senerioty level of a job.
@@ -48,6 +48,9 @@ class LLMMetadataExtractor:
         
         Query: "Show me all assessments"
         Response: {{}}
+
+        Query: "Give me assessments having duration under 10 minutes"
+        Response: {{"max_duration": 10}}
         
         Query: "Assessments longer than 45 minutes"
         Response: {{"min_duration": 45}}
