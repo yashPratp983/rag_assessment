@@ -20,4 +20,3 @@ class QueryResponse(BaseModel):
     """Schema for the complete query response."""
     results: List[AssessmentResponse]
     total_results: int
-    metadata_extracted: Dict[str, Any]

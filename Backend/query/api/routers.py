@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from fastapi import APIRouter
+from fastapi import APIRouter,HTTPException
 from query.models.schemas import QueryRequest, QueryResponse, AssessmentResponse
 from query.services.embedding import EmbeddingService
 from query.services.metadata_extractor import LLMMetadataExtractor
@@ -11,14 +11,13 @@ from query.utils.helpers import normalize_job_level, parse_json_or_return_as_lis
 from config.config import settings
 from llama_index.core.vector_stores.types import (
     VectorStoreQuery,
-    VectorStoreQueryMode,
 )
 router = APIRouter()
 
 @router.post("/query", response_model=QueryResponse)
 async def query_assessments(request: QueryRequest):
-    # """Query assessments with semantic search and metadata filtering."""
-    # try:
+    """Query assessments with semantic search and metadata filtering."""
+    try:
 
         metadata_extractor = LLMMetadataExtractor()
         embedding_service = EmbeddingService()
@@ -92,14 +91,8 @@ async def query_assessments(request: QueryRequest):
         # Return structured response
         return QueryResponse(
             results=results,
-            total_results=len(results),
-            metadata_extracted={
-                "job_levels": job_levels if job_levels else [],
-                "languages": languages if languages else [],
-                "min_duration": min_duration,
-                "max_duration": max_duration
-            }
+            total_results=len(results)
         )
         
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
