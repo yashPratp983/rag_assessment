@@ -81,7 +81,6 @@ if search_clicked and query:
                     "Job Levels": ", ".join(r["job_levels"]),
                     "Languages": ", ".join(r["languages"]),
                     "Duration (min)": r["duration_minutes"],
-                    "Score": r["similarity_score"]
                 } for r in response["results"]
             ])
             
