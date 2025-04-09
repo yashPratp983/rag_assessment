@@ -34,7 +34,7 @@ class VectorStoreService:
         )
         # self.index = VectorStoreIndex.from_vector_store(self.vector_store)
     
-    def create_metadata_filters(self, job_levels=None, languages=None, min_duration=None, max_duration=None):
+    def create_metadata_filters(self, job_levels=None, languages=None, min_duration=None, max_duration=None,assessment_type=None, adaptive_support=None, remote_support=None):
         """
         Create metadata filters for semantic search.
         
@@ -48,7 +48,7 @@ class VectorStoreService:
             MetadataFilters object or None if no filters are applied
         """
         filters = []
-        print({"job_levels":job_levels, "languages":languages, "min_duration":min_duration, "max_duration":max_duration})
+        print({"job_levels":job_levels, "languages":languages, "min_duration":min_duration, "max_duration":max_duration, "assessment_type":assessment_type, "adaptive_support":adaptive_support, "remote_support":remote_support})
         # Job levels filter
         if job_levels and isinstance(job_levels, list) and len(job_levels) > 0:
             normalized_job_levels = [normalize_job_level(level) for level in job_levels if level]
@@ -88,6 +88,33 @@ class VectorStoreService:
                 filters.append(language_conditions)
             elif len(language_conditions) == 1:
                 filters.extend(language_conditions)
+        
+        if assessment_type is not None and assessment_type != "":
+            filters.append(
+                MetadataFilter(
+                    key="assessment_type",
+                    operator=FilterOperator.EQ,
+                    value=assessment_type
+                )
+            )
+
+        if adaptive_support is not None and isinstance(adaptive_support, int) and adaptive_support in [0, 1]:
+            filters.append(
+                MetadataFilter(
+                    key="adaptive_support",
+                    operator=FilterOperator.EQ,
+                    value=adaptive_support
+                )
+            )
+
+        if remote_support is not None and isinstance(remote_support, int) and remote_support in [0, 1]:
+            filters.append(
+                MetadataFilter(
+                    key="remote_support",
+                    operator=FilterOperator.EQ,
+                    value=remote_support
+                )
+            )
         
         # Duration filters
         if min_duration is not None:

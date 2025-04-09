@@ -32,6 +32,9 @@ class LLMMetadataExtractor:
         - languages: array of language strings (e.g., ["english", "spanish"])
         - min_duration: minimum time duration in minutes (integer)
         - max_duration: maximum time duration in minutes (integer)
+        - assessment_type: type of assessment (e.g., "cognitive", "personality")
+        - adaptive_support: boolean (0 or 1) indicating if adaptive testing is supported by the assessment
+        - remote_support: boolean (0 or 1) indicating if remote support is available
         
         IMPORTANT INSTRUCTIONS:
         - Job level stictly implies senerioty level of a job.
@@ -54,6 +57,15 @@ class LLMMetadataExtractor:
         
         Query: "Assessments longer than 45 minutes"
         Response: {{"min_duration": 45}}
+
+        Query: "Find me a cognitive assessment"
+        Response: {{"assessment_type": "cognitive"}}
+
+        Query: "Find me an assessment with adaptive support"
+        Response: {{"adaptive_support": 1}}
+
+        Query: "Find me an assessment which can be given remotely"
+        Response: {{"remote_support": 1}}
         
         Query: "{query}"
         

@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # API URL - this should point to your FastAPI service
-API_URL = "https://yash983-shl-rag-assessment.hf.space"
+API_URL = "http://localhost:8000" 
 
 def query_assessments(query: str):
     """Call the FastAPI backend to query assessments using only query string"""
@@ -21,7 +21,7 @@ def query_assessments(query: str):
     }
     
     try:
-        response = requests.post(f"{API_URL}/query", json=request_data)
+        response = requests.post(f"{API_URL}/recommend", json=request_data)
         response.raise_for_status()  # Raise exception for error status codes
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -66,11 +66,15 @@ if search_clicked and query:
         # Display results
         if response["results"]:
             for i, result in enumerate(response["results"]):
-                with st.expander(f"{i+1}. {result['title']} ({result['duration_minutes']} min)", expanded=i==0):
+                with st.expander(f"{i+1}. {result['title']} ({result['duration']} min)", expanded=i==0):
                     st.markdown(f"**Description:** {result['description']}")
                     st.markdown(f"**URL:** [{result['url']}]({result['url']})")
                     st.markdown(f"**Job Levels:** {', '.join(result['job_levels'])}")
                     st.markdown(f"**Languages:** {', '.join(result['languages'])}")
+                    st.markdown(f"**Duration:** {result['duration']} minutes")
+                    st.markdown(f"**Remote Support:** {'Yes' if result['remote_support'] else 'No'}")
+                    st.markdown(f"**Adaptive Support:** {'Yes' if result['adaptive_support'] else 'No'}")
+                    st.markdown(f"**Test Type:** {result['test_type']}")
             
             # Create a dataframe for download
             df = pd.DataFrame([
@@ -80,7 +84,11 @@ if search_clicked and query:
                     "URL": r["url"],
                     "Job Levels": ", ".join(r["job_levels"]),
                     "Languages": ", ".join(r["languages"]),
-                    "Duration (min)": r["duration_minutes"],
+                    "Duration (min)": r["duration"],
+                    "Remote Support": "Yes" if r["remote_support"] else "No",
+                    "Adaptive Support": "Yes" if r["adaptive_support"] else "No",
+                    "Test Type": r["test_type"],
+                    "Query": query,
                 } for r in response["results"]
             ])
             

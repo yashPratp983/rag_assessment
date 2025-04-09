@@ -43,39 +43,51 @@ class QdrantStorage:
             collection_name=collection_name
         )
         
-    def store_data(self, processed_df: pd.DataFrame, embedding_column: str = 'embedding') -> VectorStoreIndex:
+    def store_data(self, processed_df: pd.DataFrame, batch_size: int = 100, embedding_column: str = 'embedding') -> VectorStoreIndex:
         """
-        Store processed data in Qdrant using LlamaIndex.
+        Store processed data in Qdrant using LlamaIndex with batch processing.
         
         Args:
             processed_df: DataFrame with processed data and embeddings
+            batch_size: Number of items to process in each batch
             embedding_column: Name of the column containing embeddings
             
         Returns:
             LlamaIndex vector store index
         """
-        # Convert DataFrame rows to TextNode objects
-        nodes = []
-        
-        for idx, row in processed_df.iterrows():
-            # Convert any list-like metadata to strings for compatibility
-            metadata = {
-                'title': row['title'],
-                'url': row['url'],
-                'job_levels': json.dumps(row['job_levels']) if isinstance(row['job_levels'], list) else row['job_levels'],
-                'languages': json.dumps(row['languages']) if isinstance(row['languages'], list) else row['languages'],
-                'duration_minutes': row['duration_minutes']
-            }
-            
-            # Create a TextNode with the description as text and metadata
-            node = TextNode(
-                text=row['description'],
-                metadata=metadata,
-            )
-            nodes.append(node)
-        
         # Create a storage context with the vector store
         storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
         
-        # Create and return the index
-        return VectorStoreIndex(nodes, storage_context=storage_context)
+        # Process DataFrame in batches
+        total_rows = len(processed_df)
+        for start_idx in range(0, total_rows, batch_size):
+            end_idx = min(start_idx + batch_size, total_rows)
+            batch_df = processed_df.iloc[start_idx:end_idx]
+            
+            # Convert batch DataFrame rows to TextNode objects
+            nodes = []
+            
+            for idx, row in batch_df.iterrows():
+                # Convert any list-like metadata to strings for compatibility
+                metadata = {
+                    'title': row['title'],
+                    'url': row['url'],
+                    'job_levels': json.dumps(row['job_levels']) if isinstance(row['job_levels'], list) else row['job_levels'],
+                    'languages': json.dumps(row['languages']) if isinstance(row['languages'], list) else row['languages'],
+                    'duration_minutes': row['duration_minutes']
+                }
+                
+                # Create a TextNode with the description as text and metadata
+                node = TextNode(
+                    text=row['description'],
+                    metadata=metadata,
+                )
+                node=[node]
+                if idx == 0:
+                    # Create the index with the first batch
+                    index = VectorStoreIndex(nodes, storage_context=storage_context)
+                else:
+                    # Insert additional batches into the existing index
+                    index.insert_nodes(node)
+        
+        return index

@@ -13,8 +13,10 @@ class AssessmentResponse(BaseModel):
     description: str
     job_levels: List[str]
     languages: List[str]
-    duration_minutes: int
-    similarity_score: float
+    duration: int
+    remote_support: bool
+    test_type: str
+    adaptive_support: bool
 
 class QueryResponse(BaseModel):
     """Schema for the complete query response."""

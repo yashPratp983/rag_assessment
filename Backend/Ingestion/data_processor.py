@@ -28,10 +28,12 @@ class DataProcessor:
                 'title': item.get('Title', ''),
                 'url': item.get('URL', ''),
                 'description': item.get('Description', ''),
+                'adaptive_support': self.metadata_extractor.extract_adaptive_support(item.get('Description', '')),
+                'assessment_type': self.metadata_extractor.extract_assessment_type(item.get('Description', '')),
+                'remote_support': self.metadata_extractor.extract_remote_support(item.get('Description', '')),
                 'job_levels': self.metadata_extractor.extract_metadata('Job Levels', item.get('Job Levels', '')),
                 'languages': self.metadata_extractor.extract_metadata('Languages', item.get('Languages', '')),
                 'duration_minutes': self.metadata_extractor.extract_metadata('Assessment Length', item.get('Assessment Length', ''))
             }
             processed_data.append(processed_item)
-            
         return pd.DataFrame(processed_data)

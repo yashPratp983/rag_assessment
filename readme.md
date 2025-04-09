@@ -9,7 +9,7 @@ This project provides a complete solution for searching and filtering SHL assess
 ## Features
 
 - **Semantic Search**: Find assessments based on natural language queries
-- **Metadata Filtering**: Filter by job level, language, and duration
+- **Metadata Filtering**: Filter by job level, language, duration, test type, remote support, adaptive support
 - **Intelligent Query Understanding**: Extract implied filters from natural language queries
 - **User-Friendly Interface**: Easy-to-use Streamlit frontend
 - **Robust API**: Flexible FastAPI backend for integration with other systems
@@ -31,7 +31,7 @@ This project provides a complete solution for searching and filtering SHL assess
 
 ### 3. Search API (FastAPI)
 
-- `POST /query`: Advanced query endpoint with structured request body
+- `POST /recommend`: Advanced query endpoint with structured request body
 
 - Extracts implied filters from user queries using LLM
 
@@ -39,7 +39,6 @@ This project provides a complete solution for searching and filtering SHL assess
 
 - User-friendly interface for searching assessments
 - Displays search results with relevant metadata
-- Provides filtering options for job levels, languages, and duration
 
 ## Getting Started
 

@@ -32,6 +32,65 @@ class MetadataExtractor:
         except Exception as e:
             print(f"LLM call failed: {e}")
             return ""
+    
+    def extract_adaptive_support(self, text: str) -> str:
+        """Extract adaptive support information from the text."""
+        prompt = f"""
+        Extract only the adaptive support information from the following text.
+        Return only boolean 0 or 1.
+        example:-
+        1)
+        - Description: "This assessment supports adaptive testing ."
+        - Adaptive Support: 1
+
+        Adaptive Support: "{text}"
+        
+        Adaptive Support:
+        """
+        
+        response = self._call_llm(prompt)
+        
+        return response if response else text
+    
+    def extract_assessment_type(self, text: str) -> str:    
+        
+        """Extract the assessment type from the text."""
+        prompt = f"""
+        Extract only the assessment type from the following text.
+        Return only a single string.
+
+        example:-
+        1) 
+        - Description: "This is a cognitive assessment."
+        - Assessment Type: "Cognitive"
+
+        Assessment Type: "{text}"
+        
+        Assessment Type:
+        """
+        
+        response = self._call_llm(prompt)
+        
+        return response if response else text
+    
+    def extract_remote_support(self, text: str) -> str:
+        """Extract remote support information from the text."""
+        prompt = f"""
+        Extract only the remote support information from the following text.
+        Return only boolean 0 or 1.
+        example:-
+        1)
+        - Description: "This assessment can be taken remotely."
+        - Remote Support: 1
+
+        Remote Support: "{text}"
+        
+        Remote Support:
+        """
+        
+        response = self._call_llm(prompt)
+        
+        return response if response else text
             
     def extract_minutes(self, text: str) -> int:
         """Extract the number of minutes from assessment length text."""
@@ -121,4 +180,10 @@ class MetadataExtractor:
             return self.extract_languages(field_value)
         elif field_name == "Job Levels":
             return self.extract_job_levels(field_value)
+        elif field_name == "Remote Support":
+            return self.extract_remote_support(field_value)
+        elif field_name == "Adaptive Support":
+            return self.extract_adaptive_support(field_value)
+        elif field_name == "Assessment Type":
+            return self.extract_assessment_type(field_value)
         return field_value  # Return as is for unhandled fields

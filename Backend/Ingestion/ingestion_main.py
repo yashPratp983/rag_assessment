@@ -20,7 +20,7 @@ def main():
     )
     
     # Run ingestion
-    result = pipeline.ingest("./Backend/shl_assessments.json")
+    result = pipeline.ingest(r"D:\shl_assessment\Backend\shl_assessments.json")
     
     # Display sample
     processed_data = result["dataframe"]

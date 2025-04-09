@@ -11,12 +11,18 @@ from query.utils.helpers import normalize_job_level, parse_json_or_return_as_lis
 from config.config import settings
 from llama_index.core.vector_stores.types import (
     VectorStoreQuery,
+    VectorStoreQueryMode,
 )
 router = APIRouter()
 
-@router.post("/query", response_model=QueryResponse)
+@router.get("/health")
+async def health_check():
+    """Health check endpoint to verify the API is running."""
+    return {"status": "healthy"}
+
+@router.post("/recommend", response_model=QueryResponse)
 async def query_assessments(request: QueryRequest):
-    """Query assessments with semantic search and metadata filtering."""
+    # """Query assessments with semantic search and metadata filtering."""
     try:
 
         metadata_extractor = LLMMetadataExtractor()
@@ -32,13 +38,19 @@ async def query_assessments(request: QueryRequest):
         languages = extracted_metadata.get('languages')
         min_duration = extracted_metadata.get('min_duration')
         max_duration = extracted_metadata.get('max_duration')
-        
+        assessment_type = extracted_metadata.get('assessment_type')
+        adaptive_support = extracted_metadata.get('adaptive_support')
+        remote_support = extracted_metadata.get('remote_support')
+
         # Create metadata filters
         metadata_filters = vector_store_service.create_metadata_filters(
             job_levels=job_levels,
             languages=languages,
             min_duration=min_duration,
-            max_duration=max_duration
+            max_duration=max_duration,
+            assessment_type=assessment_type,
+            adaptive_support=adaptive_support,
+            remote_support=remote_support
         )
         
         embeddings=embedding_service.get_embeddings(request.query)
@@ -62,6 +74,7 @@ async def query_assessments(request: QueryRequest):
             metadata = node.metadata
             job_levels_data = metadata.get("job_levels", "[]")
             languages_data = metadata.get("languages", "[]")
+
             
             # Parse JSON strings if needed
             job_levels_parsed = parse_json_or_return_as_list(job_levels_data)
@@ -83,15 +96,17 @@ async def query_assessments(request: QueryRequest):
                 description=node.text,
                 job_levels=job_levels_parsed,
                 languages=languages_parsed,
-                duration_minutes=metadata.get("duration_minutes", 0),
-                similarity_score=node.score if hasattr(node, 'score') else 0.0
+                duration=metadata.get("duration_minutes", 0),
+                remote_support=metadata.get("remote_support", False),
+                test_type=metadata.get("assessment_type", ""),
+                adaptive_support=metadata.get("adaptive_support", False),
             )
             results.append(result)
             
         # Return structured response
         return QueryResponse(
             results=results,
-            total_results=len(results)
+            total_results=len(results),
         )
         
     except Exception as e:
